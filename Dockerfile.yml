@@ -1,0 +1,24 @@
+# Use the official Python image as base
+FROM python:3.10.9
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+#https://groups.google.com/g/cloud-vision-discuss/c/wvJpSzUSKY4?pli=1
+ADD . /app
+
+RUN pip install --upgrade pip
+
+# RUN pip install --upgrade google-cloud-aiplatform
+
+RUN pip install --upgrade pycaret joblib
+
+RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
+
+
+# Expose port 
+ENV PORT 8080
+
+# Run the application:
+CMD ["python", "-m", "app"]
