@@ -10,7 +10,6 @@ import os
 from PIL import Image
 from io import BytesIO
 import base64
-from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import vertexai
@@ -27,6 +26,7 @@ import base64
 import logging
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from google.cloud import aiplatform
+import uvicorn
 
 app = FastAPI()
 
@@ -242,56 +242,7 @@ async def detect(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/detect_objects/")
-async def predict(file: UploadFile = File(...)):
-    try:
-        # Read the file content
-        content = await file.read()
-
-        # Encode the content as base64
-        encoded_content = base64.b64encode(content).decode("utf-8")
-
-        # Initialize the AI Platform client
-        client_options = {"api_endpoint": api_endpoint}
-        client = aiplatform.gapic.PredictionServiceClient(client_options=client_options)
-
-        # Create the instance and parameters for the prediction request
-        instance = {"content": encoded_content}
-        instances = [instance]
-        parameters = {"confidenceThreshold": 0.0, "maxPredictions": 5}  # Adjust confidenceThreshold if necessary
-
-        # Define the endpoint path
-        endpoint = client.endpoint_path(
-            project=project_id, location=location, endpoint=endpoint_id_od
-        )
-
-        # Make the prediction request
-        response = client.predict(
-            endpoint=endpoint_id_od, instances=instances, parameters=parameters
-        )
-
-        # Log the entire prediction response for debugging
-        logger.info("Prediction response: %s", response)
-
-        # Extract predictions from the response
-        predictions = response.predictions
-        results = []
-        for prediction in predictions:
-            display_names = prediction.get("displayNames", [])
-            confidences = prediction.get("confidences", [])
-    
-    # Iterate through displayNames and confidences
-            for i in range(min(len(display_names), len(confidences))):
-                label = display_names[i]
-                score = confidences[i]
-                results.append({"label": label, "score": score})
-
-        return {"predictions": results}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-        
+ 
 # Run the FastAPI app with uvicorn
 if __name__ == '__main__':
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8087)

@@ -8,7 +8,7 @@ WORKDIR /app
 #https://groups.google.com/g/cloud-vision-discuss/c/wvJpSzUSKY4?pli=1
 ADD . /app
 
-RUN pip install --upgrade pip
+RUN pip install python-multipart
 
 # RUN pip install --upgrade google-cloud-aiplatform
 
@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir --force-reinstall -r requirements.txt
 
 
 # Expose port 
-ENV PORT 8080
+ENV PORT 8088
 
 # Run the application:
 CMD ["python", "-m", "app_od"]

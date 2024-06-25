@@ -2,6 +2,7 @@ import base64
 import logging
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from google.cloud import aiplatform
+import uvicorn
 
 app = FastAPI()
 
@@ -65,4 +66,4 @@ async def predict(file: UploadFile = File(...)):
 
 # Run the FastAPI app with uvicorn
 if __name__ == '__main__':
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8088)
